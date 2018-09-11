@@ -7,22 +7,12 @@ import (
 	"fmt"
 )
 
-boardConfig := [8]int{0, 1, 2, 3, 4, 5, 6, 7, 8}
-
 type 8puzzle struct {
-	topLeft
-	topMiddle
-	topRight
-	middleLeft
-	middleMiddle
-	middleRight
-	bottomLeft
-	bottomMiddle
-	bottomRight
+	boardConfig
 }
 
-func (x 8puzzle) makeArray(y int) {
-	x.boardConfig = {x.topLeft, x.topMiddle, x.topRight, x.middleLeft, x.middleMiddle, x.middleRight, x.bottomLeft, x.bottomMiddle, x.bottomRight}
+func (x 8puzzle) setState(y [8]int) {
+	x.boardConfig = y
 }
 
 func (x 8puzzle) findNum(y int) int {
