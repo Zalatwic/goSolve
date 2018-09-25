@@ -14,8 +14,8 @@ type astar struct {
 //create nodes with counters for linked list
 //counter represents actual distance traveled
 type Node struct {
-	h int
-	d int
+	state [9]int
+	cost int
 	nextNode Node
 	previousNode Node
 }

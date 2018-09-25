@@ -4,7 +4,7 @@ import "os"
 import "fmt"
 import "bufio"
 import "strings"
-//import "log"
+import "math"
 import "ePuzzle"
 
 type fn func([9]int, [9]int)
@@ -78,10 +78,31 @@ func main() {
 
 }
 
-func aStarHeuristic(state [9]int, move [9]int) {
+//return the value of tiles misplaced
+func h1(state [9]int) int {
+	misplacedTiles := 0
+	winCondition := {0, 1, 2, 3, 4, 5, 6, 7, 8}
 
+	for i := 0; i < 9; i++ {
+		if winCondition[i] == state[i] {
+			misplacedTiles++
+		}
+	}
+
+	return misplasedTiles
 }
 
-func beamHeuristic(state [9]int, move [9]int) {
+//for h2, add the result of the number divided by 3, as well as the remainder to get the position
+func h2(state [9]int) int {
+	totalDistance := 0
+
+	for i:=0; i < 9; i++ {
+		totalDistance = totalDistance + math.Abs(math.Floor((state[i] - i) / 3))) + math.Abs((state[i] - i) % 3)
+	}
+
+	return totalDistance
+}
+
+func beamHeuristic(state [9]int, move [9]int) int {
 
 }
