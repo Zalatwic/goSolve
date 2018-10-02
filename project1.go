@@ -6,8 +6,10 @@ import "bufio"
 import "strings"
 import "math"
 import "time"
+import "strconv"
 import "math/rand"
 import "PuzzleObject"
+import "Beam"
 
 type fn func([]int, []int)
 
@@ -16,6 +18,7 @@ func main() {
 	var focusObject PuzzleObject.Puzzle
 	focusObject.SetState([]int{0, 1, 2, 3, 4, 5, 6, 7, 8})
 	file, err := getCommands(os.Args[1])
+	maxNodes := 5800
 
 	if err != nil {
 		fmt.Println("failed to read argument file.")
@@ -40,12 +43,13 @@ func main() {
 			fmt.Println(randomState)
 			focusObject.SetState(randomState)
 			fmt.Println(focusObject.GetStates(0))
-			fmt.Println(h2(focusObject.GetStates(0)[0]))
+			fmt.Println("debug")
+			//fmt.Println(h2(focusObject.GetStates(0)[0]))
 
 		}
 
 		if strings.Compare("printState", command) == 0 {
-
+			printNice(focusObject.GetState())
 		}
 
 		if strings.Compare("move", command) == 0 {
@@ -68,6 +72,7 @@ func main() {
 		}
 
 		if strings.Compare("solve", command) == 0 {
+			fmt.Println(file[A+1])
 			A++
 			if strings.Compare("A-star", file[A]) == 0 {
 				A++
@@ -77,13 +82,28 @@ func main() {
 				}
 			}
 
-			if strings.Compare("beam", command) == 0 {
+			if strings.Compare("beam", file[A]) == 0 {
+				fmt.Println("works")
 
+				s, err := strconv.Atoi(file[A+1])
+
+				if err != nil {
+					fmt.Println("atoi error")
+				}
+
+				aiInst := Beam.Beam{s, maxNodes, GetNames()}
+				aiInst.SolvePuzzle(focusObject.GetState(), h2, focusObject.SetState, focusObject.GetStates)
 			}
 		}
 
 		if strings.Compare("maxNodes", command) == 0 {
+			s, err := strconv.Atoi(file[A+1])
 
+			if err != nil {
+				fmt.Println("atoi error")
+			}
+
+			maxNodes = s
 		}
 	}
 }
@@ -106,8 +126,8 @@ func h1(state []int) int {
 func h2(state []int) int {
 	totalDistance := 0
 
-	for i:=0; i < 9; i++ {
-		totalDistance = totalDistance + int(math.Abs(math.Floor(float64(state[i] - i) / 3)) + math.Abs(float64((state[i] - i) % 3)))
+	for i := 0; i < 9; i++ {
+		totalDistance = totalDistance + int(math.Abs(math.Floor(float64(state[i]-i)/3))+math.Abs(float64((state[i]-i)%3)))
 	}
 
 	return totalDistance
@@ -137,15 +157,20 @@ func getCommands(filePath string) ([]string, error) {
 	return commandList, nil
 }
 
+func GetNames() []string {
+	moveNames := []string{"left", "right", "up", "down"}
+	return moveNames
+}
+
 func printNice(data []int) {
 	for i := 0; i < 9; i++ {
-		if((i % 3) == 0) {
+		if (i % 3) == 0 {
 			fmt.Println("")
 		}
-		if(data[i] != 0) {
+		if data[i] != 0 {
 			fmt.Print(data[i])
 		}
-		if(data[i] == 0) {
+		if data[i] == 0 {
 			fmt.Print(" ")
 		}
 	}
