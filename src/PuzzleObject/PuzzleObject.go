@@ -3,26 +3,20 @@
 
 package PuzzleObject
 
-import "fmt"
-
 type Puzzle struct {
 	hiddenConfig []int
 }
 
 func (x *Puzzle) SetState(y []int) {
 	x.hiddenConfig = y
-	fmt.Println(x.hiddenConfig, y)
 }
 
 func (x *Puzzle) GetState() []int {
-	fmt.Println(x.hiddenConfig)
 	return copySlice(x.hiddenConfig)
 }
 
 func (x *Puzzle) FindNum(y int) int {
 	z := 0
-
-	fmt.Println("kk", x.hiddenConfig)
 
 	for y != x.hiddenConfig[z] {
 		z++

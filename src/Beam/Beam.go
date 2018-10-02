@@ -36,7 +36,6 @@ func (x *Beam) SolvePuzzle(inState []int, hMod fn, setState ssn, stateOptions gs
 
 	//sort to find the lowest cost ofx.k options then execute
 	for true {
-		fmt.Println(nodeSlice)
 		sort.Slice(nodeSlice, func(i, j int) bool { return nodeSlice[i].cost < nodeSlice[j].cost })
 
 		//find an unevaluated node and evaluate it
@@ -49,7 +48,6 @@ func (x *Beam) SolvePuzzle(inState []int, hMod fn, setState ssn, stateOptions gs
 
 		evaluatedMoves = append(evaluatedMoves, copySliceInt(chosenNode.currentState))
 
-		fmt.Println(stateOptions(0))
 		hCost := 0
 		var moveOptions []Node
 		var potentialStates [][]int
@@ -71,10 +69,9 @@ func (x *Beam) SolvePuzzle(inState []int, hMod fn, setState ssn, stateOptions gs
 			if hMod(possibleMove) == 0 {
 				//win condition
 				fmt.Println(append(newMoves, x.StateNames[i]))
+				fmt.Println("found in", nodeCounter, "moves")
 				return
 			}
-
-			fmt.Println("hello")
 
 			//ensure this node hasnt been evaluated prior
 			if !contains(evaluatedMoves, possibleMove) {
@@ -92,7 +89,6 @@ func (x *Beam) SolvePuzzle(inState []int, hMod fn, setState ssn, stateOptions gs
 		//sort the options for the search next iteration and return top seven candidates
 		sort.Slice(moveOptions, func(i, j int) bool { return moveOptions[i].cost < moveOptions[j].cost })
 		nodeSlice = moveOptions
-
 	}
 }
 
@@ -111,7 +107,6 @@ func copySliceInt(i []int) []int {
 func contains(s [][]int, e []int) bool {
 	for _, a := range s {
 		if testEquality(a, e) {
-			fmt.Println("yikes", a)
 			return true
 		}
 	}

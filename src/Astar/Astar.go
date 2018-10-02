@@ -1,71 +1,116 @@
 //kps59
-//astar for arraylike object
+//implimentation of beam search given any puzzle object
 
 package Astar
 
 import "fmt"
+import "sort"
 
 type fn func([]int) int
 type ssn func([]int)
 type gsn func(int) [][]int
 
 type Astar struct {
-	MaxNodes int
+	MaxNodes   int
+	StateNames []string
 }
 
-//create nodes with counters for linked list
-//counter represents actual distance traveled
 type Node struct {
-	state         []int
+	currentState  []int
 	cost          int
-	distance      int
 	previousMoves []string
 }
 
-//create first node through evaluation of the current state hMod
-func (x *Astar) solve(board ePuzzle, currentState []int, hMod fn, setState ssn, stateOptions gsn, moveNames []string, goalState []int) {
-	originNode := headNode{currentState, hMod(currentState)}
-	var uncheckedNodeSlice []Node
-	globalNodeAmount := 0
-	run := true
+func (x *Astar) SolvePuzzle(inState []int, hMod fn, setState ssn, stateOptions gsn) {
+	//make slice and limit nodes to k
+	var nodeSlice []Node
+	var evaluatedMoves [][]int
 
-	for run {
-		candidate := x.findCandidate(uncheckedNodeSlice)
+	//count the amount of nodes generated
+	nodeCounter := 0
 
-		if testEquality(candidate.state, goalState) {
-			run = false
-			fmt.Println(candidate.previousMoves)
+	//add the head node to evaluate
+	nodeSlice = append(nodeSlice, Node{inState, hMod(inState), []string{"origin"}})
+
+	//sort to find the lowest cost ofx.k options then execute
+	for true {
+		sort.Slice(nodeSlice, func(i, j int) bool { return nodeSlice[i].cost < nodeSlice[j].cost })
+
+		//find an unevaluated node and evaluate it
+		var chosenNode Node
+		chosenNode = nodeSlice[0]
+
+		var newMoves []string
+		newMoves = copySlice(chosenNode.previousMoves)
+		setState(copySliceInt(chosenNode.currentState))
+
+		evaluatedMoves = append(evaluatedMoves, copySliceInt(chosenNode.currentState))
+
+		hCost := 0
+		var moveOptions []Node
+		var potentialStates [][]int
+		potentialStates = stateOptions(0)
+
+		for i, possibleMove := range potentialStates {
+			nodeCounter++
+
+			//set cost equal to heuristic
+			hCost = hMod(possibleMove) + len(newMoves) + 1
+			fmt.Println("possible move: ", possibleMove, "cost", hCost)
+
+			fmt.Println(chosenNode)
+
+			if nodeCounter > x.MaxNodes {
+				fmt.Println("beam failed to find result in", x.MaxNodes, "nodes")
+				return
+			}
+
+			//if the score is zero, the goal is achieved
+			if hMod(possibleMove) == 0 {
+				//win condition
+				fmt.Println(append(newMoves, x.StateNames[i]))
+				fmt.Println("found in", nodeCounter, "moves")
+				return
+			}
+
+			//ensure this node hasnt been evaluated prior
+			if !contains(evaluatedMoves, possibleMove) {
+				moveOptions = append(moveOptions, Node{possibleMove, hCost, append(newMoves, x.StateNames[i])})
+			}
 		}
 
-		if globalNodeAmount > x.MaxNodes {
-			run = false
-			fmt.Println("astar search out of moves")
+		for _, currentNode := range nodeSlice {
+			if !contains(evaluatedMoves, currentNode.currentState) {
+				moveOptions = append(moveOptions, currentNode)
+			}
+
 		}
 
-		setState(candidate)
-		for B, focusNode := range stateOptions(0) {
-			globalNodeAmount++
-			uncheckedNodeSlice = append(uncheckedNodeSlice, Node{focusNode, (candidate.distance + 1 + hMod(focusNode)), (candidate.distance + 1), append(candidate.previousMoves, moveNames[B])})
-		}
-
-		//remove candidate from uncheckedNodeSlice
-
+		//sort the options for the search next iteration and return top seven candidates
+		sort.Slice(moveOptions, func(i, j int) bool { return moveOptions[i].cost < moveOptions[j].cost })
+		nodeSlice = moveOptions
 	}
 }
 
-//search through tree to find lowest h value
-func (x Astar) findCandidate(nodeList []Node) Node {
-	currentMin := -1
-	var selectedNode Node
+func copySlice(s []string) []string {
+	t := make([]string, len(s))
+	copy(t, s)
+	return t
+}
 
-	for A, currentNode := range nodeList {
-		if currentMin == -1 || currentMin > currentNode.cost {
-			currentMin = currentNode.cost
-			selectedNode = currentNode
+func copySliceInt(i []int) []int {
+	t := make([]int, len(i))
+	copy(t, i)
+	return t
+}
+
+func contains(s [][]int, e []int) bool {
+	for _, a := range s {
+		if testEquality(a, e) {
+			return true
 		}
 	}
-
-	return selectedNode
+	return false
 }
 
 func testEquality(x, y []int) bool {

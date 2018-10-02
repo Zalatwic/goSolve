@@ -1,3 +1,3 @@
 randomizeState
 maxNodes 100000
-solve beam 12
+solve A-star h2

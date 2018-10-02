@@ -10,6 +10,7 @@ import "strconv"
 import "math/rand"
 import "PuzzleObject"
 import "Beam"
+import "Astar"
 
 type fn func([]int, []int)
 
@@ -77,8 +78,12 @@ func main() {
 			if strings.Compare("A-star", file[A]) == 0 {
 				A++
 				if strings.Compare("h1", file[A]) == 0 {
+					aiInst := Astar.Astar{maxNodes, GetNames()}
+					aiInst.SolvePuzzle(focusObject.GetState(), h1, focusObject.SetState, focusObject.GetStates)
 				}
 				if strings.Compare("h2", file[A]) == 0 {
+					aiInst := Astar.Astar{maxNodes, GetNames()}
+					aiInst.SolvePuzzle(focusObject.GetState(), h2, focusObject.SetState, focusObject.GetStates)
 				}
 			}
 
