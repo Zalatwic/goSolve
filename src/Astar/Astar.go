@@ -55,13 +55,12 @@ func (x *Astar) SolvePuzzle(inState []int, hMod fn, setState ssn, stateOptions g
 			nodeCounter++
 
 			//set cost equal to heuristic
-			hCost = hMod(possibleMove) + len(newMoves) + 1
-			fmt.Println("possible move: ", possibleMove, "cost", hCost)
+			hCost = hMod(possibleMove) + len(newMoves)
 
 			fmt.Println(chosenNode)
 
 			if nodeCounter > x.MaxNodes {
-				fmt.Println("beam failed to find result in", x.MaxNodes, "nodes")
+				fmt.Println("a* failed to find result in", x.MaxNodes, "nodes")
 				return
 			}
 

@@ -8,7 +8,7 @@ import "math"
 import "time"
 import "strconv"
 import "math/rand"
-import "PuzzleObject"
+import "BigPuzzle"
 import "Beam"
 import "Astar"
 
@@ -16,8 +16,8 @@ type fn func([]int, []int)
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
-	var focusObject PuzzleObject.Puzzle
-	focusObject.SetState([]int{0, 1, 2, 3, 4, 5, 6, 7, 8})
+	var focusObject BigPuzzle.BigPuzzle
+	focusObject.SetState([]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11})
 	file, err := getCommands(os.Args[1])
 	maxNodes := 5800
 
@@ -27,7 +27,7 @@ func main() {
 
 	for A, command := range file {
 		if strings.Compare("setState", command) == 0 {
-			focusObject.SetState(figureState(file[A+1], file[A+2], file[A+3]))
+
 		}
 
 		if strings.Compare("randomizeState", command) == 0 {
@@ -35,7 +35,7 @@ func main() {
 			randomState := focusObject.GetState()
 
 			for i := 0; i < 7; i++ {
-				num := rand.Intn(9)
+				num := rand.Intn(12)
 				randomState[num], randomState[i] = randomState[i], randomState[num]
 
 			}
@@ -114,9 +114,9 @@ func main() {
 //return the value of tiles misplaced
 func h1(state []int) int {
 	misplacedTiles := 0
-	winCondition := []int{0, 1, 2, 3, 4, 5, 6, 7, 8}
+	winCondition := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 10, 11}
 
-	for i := 0; i < 9; i++ {
+	for i := 0; i < 12; i++ {
 		if winCondition[i] != state[i] {
 			misplacedTiles++
 		}
@@ -129,7 +129,7 @@ func h1(state []int) int {
 func h2(state []int) int {
 	totalDistance := 0
 
-	for i := 0; i < 9; i++ {
+	for i := 0; i < 12; i++ {
 		totalDistance = totalDistance + int(math.Abs(math.Floor(float64(state[i]-i)/3))+math.Abs(float64((state[i]-i)%3)))
 	}
 	return totalDistance
@@ -161,7 +161,7 @@ func GetNames() []string {
 }
 
 func printNice(data []int) {
-	for i := 0; i < 9; i++ {
+	for i := 0; i < 12; i++ {
 		if (i % 3) == 0 {
 			fmt.Println("")
 		}
@@ -173,19 +173,4 @@ func printNice(data []int) {
 		}
 	}
 	fmt.Println()
-}
-
-func figureState(s1, s2, s3 string) []int {
-	var intSlice []int
-	mainString := s1 + s2 + s3
-
-	for _, x := range mainString {
-		if x == 98 {
-			intSlice = append(intSlice, 0)
-		} else {
-			intSlice = append(intSlice, (int(x) - 48))
-		}
-	}
-
-	return intSlice
 }
